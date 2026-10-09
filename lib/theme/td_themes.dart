@@ -329,6 +329,22 @@ class TowerStyles {
   static bool isPro(int i) => i >= 4;
 }
 
+/// Cosmetic enemy styles — paint/finish applied to all enemies. First 4
+/// FREE, the rest PRO.
+class EnemyStyles {
+  static const List<String> names = [
+    'Standard', // 0 free
+    'Scout', // 1 free
+    'Brute', // 2 free
+    'Runner', // 3 free
+    'Venom', // 4 pro
+    'Magma', // 5 pro
+    'Shadow', // 6 pro
+    'Golden', // 7 pro
+  ];
+  static bool isPro(int i) => i >= 4;
+}
+
 /// Cosmetic map styles — the battlefield's dressing: grass dressing, road
 /// width, checkerboard, flowers and pebbles. First 4 FREE, the rest PRO.
 class MapStyles {

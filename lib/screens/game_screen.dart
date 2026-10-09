@@ -712,7 +712,7 @@ class _BoardPainter extends CustomPainter {
       for (int i = 0; i < 12; i++) {
         final x = rnd.nextDouble() * size.width;
         final y = rnd.nextDouble() * size.height;
-        c.drawEllipse(
+        c.drawOval(
             Rect.fromCenter(
                 center: Offset(x, y),
                 width: cell * (0.5 + rnd.nextDouble() * 0.8),
@@ -858,7 +858,7 @@ class _BoardPainter extends CustomPainter {
     final s = tw.buildT > 0 ? (1 - tw.buildT / 0.45).clamp(0.0, 1.0) : 1.0;
     final sc = 0.6 + 0.4 * s;
     // Shadow.
-    c.drawEllipse(
+    c.drawOval(
         Rect.fromCenter(
             center: o + Offset(2, cell * 0.28),
             width: cell * 0.6 * sc,
@@ -946,7 +946,7 @@ class _BoardPainter extends CustomPainter {
     final boss = cr.kind == 'boss';
     final r = cell * (boss ? 0.4 : cr.kind == 'swarm' ? 0.2 : 0.28) * sc;
     // Shadow.
-    c.drawEllipse(
+    c.drawOval(
         Rect.fromCenter(
             center: o + const Offset(1, 4), width: r * 1.6, height: r * 0.5),
         Paint()..color = Colors.black.withValues(alpha: 0.25 * alpha));
