@@ -72,7 +72,7 @@ class TDSettings extends ChangeNotifier {
   int gamesPlayed = 0;
   int campaignWins = 0;
   int totalKills = 0;
-  bool isPro = false;
+  bool isPro = true; // everything unlocked — no Pro version
 
   /// Custom theme colors (ARGB ints). Defaults mirror the Green Meadow.
   Map<String, int> customColors = Map.of(_defaultCustomColors);
@@ -158,7 +158,7 @@ class TDSettings extends ChangeNotifier {
     gamesPlayed = p.getInt(_kGames) ?? 0;
     campaignWins = p.getInt(_kWins) ?? 0;
     totalKills = p.getInt(_kKills) ?? 0;
-    isPro = p.getBool(_kIsPro) ?? false;
+    isPro = true; // everything unlocked
     for (final k in _defaultCustomColors.keys) {
       customColors[k] = p.getInt('$_kCustomPrefix$k') ?? _defaultCustomColors[k]!;
     }

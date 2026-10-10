@@ -2,7 +2,7 @@ name: towerdefense
 description: Tower Defense by Wajiha - hold the castle through waves of toy-like creeps.
 publish_to: 'none'
 
-version: 2.0.0+1
+version: 2.0.1+2
 
 environment:
   sdk: ^3.13.5
