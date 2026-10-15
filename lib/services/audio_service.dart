@@ -18,6 +18,9 @@ import 'package:audioplayers/audioplayers.dart';
 ///   resumes exactly where it left off instead of restarting or dying.
 /// - Every public method catches player errors; audio can never crash the app.
 class TDAudio {
+  /// Per-game pitch character (towerdefense): 1.02x. Makes SFX unique.
+  static const double _pitchMul = 1.020;
+
   static const int _rate = 22050;
   final AudioPlayer _sfx = AudioPlayer();
   final AudioPlayer _music = AudioPlayer();
@@ -103,6 +106,8 @@ class TDAudio {
 
   List<double> _tone(double freq, double secs,
       {double freqEnd = 0, double attack = 0.02, double harmonics = 0.25}) {
+    freq *= _pitchMul;
+    freqEnd *= _pitchMul;
     final n = (_rate * secs).round();
     final out = List<double>.filled(n, 0);
     for (int i = 0; i < n; i++) {
@@ -245,47 +250,51 @@ class TDAudio {
       _cache.putIfAbsent(key, () => _wav(build()));
 
   Uint8List _menuBytes() => _clip('music_menu', () {
-        // Warm C – G – Am – F folk pad, 16s loop.
-        final seq = [
-          [261.63, 329.63, 392.0], // C
-          [196.0, 246.94, 293.66], // G
-          [220.0, 261.63, 329.63], // Am
-          [174.61, 220.0, 261.63], // F
-        ];
+        // A arpeggiated 5 – 3 – 0 – 4, 16s loop. Unique to towerdefense.
+        final notes = [369.99, 440.00, 554.37, 440.00, 293.66, 369.99, 440.00, 369.99, 220.00, 277.18, 329.63, 277.18, 329.63, 415.30, 493.88, 415.30];
         final out = <double>[];
-        for (final chord in seq) {
-          out.addAll(_padChord(chord, 4.0));
+        final noteLen = 16.0 / notes.length;
+        for (final n in notes) {
+          out.addAll(_tone(n, noteLen * 0.9, harmonics: 0.3));
+          final gap = List<double>.filled((_rate * noteLen * 0.1).round(), 0);
+          out.addAll(gap);
+        }
+        // Soft pad underneath
+        final pad = _padChord([369.99, 440.00, 554.37], 16.0);
+        for (int i = 0; i < out.length && i < pad.length; i++) {
+          out[i] += pad[i] * 0.3;
         }
         return out;
       });
 
+
   Uint8List _gameBytes() => _clip('music_game', () {
-        // Marching drum-ish pulse under a brave horn-ish melody, 16s loop.
-        final n = (_rate * 16).round();
-        final out = List<double>.filled(n, 0);
-        // Low pulse every half second.
-        for (int k = 0; k < 32; k++) {
-          final start = (n * k / 32).round();
-          final thump = _knock(base: 90);
-          for (int i = 0; i < thump.length && start + i < n; i++) {
-            out[start + i] += thump[i] * 0.35;
-          }
-        }
-        // Heroic melody line.
-        final melody = [
-          329.63, 329.63, 392.0, 440.0, 440.0, 392.0, 329.63, 293.66,
-          261.63, 261.63, 293.66, 329.63, 329.63, 293.66, 261.63, 0.0,
+        // A waltz 5 – 3 – 0 – 4, 12s loop. Unique to towerdefense.
+        final seq = [
+          [369.99, 440.00, 554.37],
+          [293.66, 369.99, 440.00],
+          [220.00, 277.18, 329.63],
+          [329.63, 415.30, 493.88]
         ];
-        for (int k = 0; k < melody.length; k++) {
-          if (melody[k] <= 0) continue;
-          final start = (n * k / melody.length).round();
-          final tone = _tone(melody[k], 0.7, harmonics: 0.35);
-          for (int i = 0; i < tone.length && start + i < n; i++) {
-            out[start + i] += tone[i] * 0.28;
-          }
+        final out = <double>[];
+        for (final chord in seq) {
+          // Waltz: bass on 1, chords on 2 and 3
+          final bass = _tone(chord[0] / 2, 0.8, harmonics: 0.3);
+          final ch1 = _padChord([chord[1], chord[2]], 0.7);
+          final ch2 = _padChord([chord[1], chord[2]], 0.7);
+          out.addAll(bass);
+          final gap1 = List<double>.filled((_rate * 0.2).round(), 0);
+          out.addAll(gap1);
+          out.addAll(ch1);
+          final gap2 = List<double>.filled((_rate * 0.2).round(), 0);
+          out.addAll(gap2);
+          out.addAll(ch2);
+          final gap3 = List<double>.filled((_rate * 0.2).round(), 0);
+          out.addAll(gap3);
         }
         return out;
       });
+
 
   // ------------------------------------------------------------------ SFX
   Future<void> _play(Uint8List bytes) async {
