@@ -5,6 +5,7 @@ import '../services/audio_service.dart';
 import '../services/iap_service.dart';
 import '../services/settings_service.dart';
 import '../theme/td_themes.dart';
+import '../transfer/transfer_ui.dart';
 
 /// Settings: renameable commander profile, audio toggles + volume,
 /// share, rate, credits.
@@ -49,6 +50,7 @@ class SettingsScreen extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
             children: [
+              TransferSaveTile(gameSlug: 'towerdefense'),
               _section(t, 'COMMANDER', [
                 ListTile(
                   contentPadding: EdgeInsets.zero,
